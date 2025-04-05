@@ -46,7 +46,8 @@ document.getElementById('MedicamentosForm').addEventListener('submit', function(
         }]
     };
 
-    fetch('https://hl7-fhir-ehr.onrender.com/MedicationRequest', {
+    fetch('https://hl7-fhir-ehr.onrender.com/medication_request
+', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
