@@ -1,6 +1,7 @@
 document.getElementById('MedicamentosForm').addEventListener('submit', function(event) {
     event.preventDefault();
-
+  
+    // Obtener los valores del formulario
     const name = document.getElementById('name').value;
     const familyName = document.getElementById('familyName').value;
     const identifierSystem = document.getElementById('identifierSystem').value;
@@ -10,48 +11,47 @@ document.getElementById('MedicamentosForm').addEventListener('submit', function(
     const dosage = document.getElementById('dosage').value;
     const frequency = document.getElementById('frequency').value;
     const duration = document.getElementById('duration').value;
-
+  
+    // Crear el objeto MedicationRequest
     const medicationRequest = {
-        resourceType: "MedicationRequest",
-        subject: {
-            identifier: {
-                system: identifierSystem,
-                value: identifierValue
-            },
-            name: {
-                given: name,
-                family: familyName
-            }
-        },
-        medicationCodeableConcept: {
-            coding: [{
-                system: "http://www.nlm.nih.gov/research/umls/rxnorm",
-                code: medicationCode,
-                display: medicationDisplay
-            }]
-        },
-        dosageInstruction: [{
-            text: `${dosage}, ${frequency} durante ${duration}`
+      resourceType: "MedicationRequest",
+      status: "active",
+      intent: "order",
+      medicationCodeableConcept: {
+        coding: [{
+          system: "http://www.nlm.nih.gov/research/umls/rxnorm",
+          code: medicationCode,
+          display: medicationDisplay
         }]
-    };
-
-    fetch('https://hl7-fhir-ehr.onrender.com/medication-request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+      },
+      subject: {
+        identifier: {
+          system: identifierSystem,
+          value: identifierValue
         },
-        body: JSON.stringify(medicationRequest)
+        display: `${name} ${familyName}`
+      },
+      dosageInstruction: [{
+        text: `Tomar ${dosage} cada ${frequency} horas durante ${duration} días`
+      }]
+    };
+  
+    // Enviar la solicitud al backend
+    fetch('https://hl7-fhir-ehr.onrender.com/medication-request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(medicationRequest)
     })
-    .then(response => {
-        if (!response.ok) throw new Error("Error en el servidor");
-        return response.json();
-    })
-    .then(data => {
+      .then(response => response.json())
+      .then(data => {
         console.log('Success:', data);
-        alert('¡Solicitud de medicamento creada exitosamente!');
-    })
-    .catch(error => {
+        alert('Receta creada exitosamente');
+      })
+      .catch(error => {
         console.error('Error:', error);
-        alert('Error al enviar la solicitud.');
-    });
-});
+        alert('Error al crear la receta');
+      });
+  });
+  
